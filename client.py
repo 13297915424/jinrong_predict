@@ -11,7 +11,7 @@ def main(cls,name,msg,warn):
     db = DB_Connector()
     db.curse.execute("select class1 from mds_jinrong_day group by class1")
     dalei = [i[0] for i in db.curse.fetchall()]
-    db.curse.execute("select name from %s where class1='%s' group by name" % (db.table, '基金'))
+    db.curse.execute("select name from %s where class1='%s' group by name" % (db.table,dalei[0] ))
     names = sorted([str(i[0]) for i in db.curse.fetchall()])
     db.curse.execute("select class2,date,data from %s where class1='%s' and name='%s'" % (db.table, cls, name))
     dt = pd.DataFrame(db.curse.fetchall(), columns=['class2', 'date', 'data'],dtype=str)
