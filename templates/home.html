@@ -55,23 +55,25 @@
     <div class="col-lg-6" style="width:100%;float:right">
         <div class="card">
             <div class="card-header">
-                <strong class="card-title">预测数据</strong>
+                <strong class="card-title">{{tb_header}}</strong>
             </div>
             <div class="card-body">
                 <table class="table">
                     <thead>
                     <tr>
-                        <th scope="col">类型</th>
-                        <th scope="col">日期</th>
-                        <th scope="col">预测数据</th>
+                        {% for i in colnames %}
+                        <td>{{i}}</td>
+                        {% endfor %}
                     </tr>
                     </thead>
                     <tbody>
                     {% for i in predict_data%}
                     <tr>
                         <td>{{i.name}}</td>
-                        <td>{{i.date}}</td>
-                        <td>{{i.data}}</td>
+                        {% set outerloop=loop %}
+                        {% for j in i.data %}
+                        <td>{{j}}</td>
+                        {% endfor %}
                     </tr>
                     {% endfor %}
                     </tbody>

@@ -23,6 +23,12 @@ def main(cls,name,msg,warn):
     legend = []
     xAxis = set()
     predict_data = []
+    if cls=='银行':
+        tb_header = "一万元投资预计年收益(元)"
+        colnames = ['#', '预计收益']
+    else:
+        tb_header = "七日预测数据"
+        colnames = ['#', '第1日','第2日','第3日','第4日','第5日','第6日','第7日']
     for cls2 in dt.groupby('class2'):
         time_serise = cls2[1]
         time_serise.loc[:, 'date'] = pd.to_datetime(time_serise['date'])
@@ -36,9 +42,19 @@ def main(cls,name,msg,warn):
             list(time_serise['date']),
             list(time_serise['data'])
         ]
-        predict_data.append({'name': str(cls2[0]) + "-预测数据",
-                             'date': str(datetime.timedelta(days=1) + last_day).split(' ')[0],
-                             'data': float(time_serise['data'].mean())})
+        last = float(time_serise.loc[time_serise.index[-1]]['data'])
+        mean = float(time_serise['data'].mean())
+        predict = last*0.5+mean*0.5
+        if cls=='银行':
+            predict_data.append({'name': str(cls2[0]),
+                                 'date': str(last_day).split(' ')[0],
+                                 'data': [round(predict*100,2)]})
+        else:
+            step = (last-mean)/7
+            predict = [round(i*step+last,2) for i in range(7)]
+            predict_data.append({'name': str(cls2[0]),
+                                 'date': str(last_day).split(' ')[0],
+                                 'data': predict})
         legend.append(str(cls2[0]))
         for i in list(time_serise['date']):
             xAxis.add(i)
@@ -54,7 +70,7 @@ def main(cls,name,msg,warn):
         new_lines.append([line[0], [float(p) if p else 0. if p != None else None for p in tmp_data]])
     xAxis = [str(i).split(' ')[0] for i in xAxis]
     return render_template('home.html', lines=new_lines, dalei=dalei, names=names, char_name=name, legend=legend,
-                           xAxis=xAxis, predict_data=predict_data,message=msg,warn=warn)
+                           xAxis=xAxis, predict_data=predict_data,message=msg,warn=warn,tb_header=tb_header,colnames=colnames)
 
 
 @app.route('/',methods=['POST','GET'])
